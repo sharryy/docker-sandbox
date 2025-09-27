@@ -17,6 +17,7 @@ yarn-error.log
 # Editors
 /.idea
 /.fleet
+/.claude
 /.vscode
 
 # Code sniffer
