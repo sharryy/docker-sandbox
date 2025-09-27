@@ -3,7 +3,6 @@
 namespace Sharryy\Docker;
 
 use stdClass;
-use GuzzleHttp\Client;
 
 class ContainerBuilder
 {
@@ -18,7 +17,7 @@ class ContainerBuilder
     private bool $autoRemove = false;
     private array $labels = [];
 
-    public function __construct(private readonly Client $client, private readonly string $image)
+    public function __construct(private readonly DockerClient $client, private readonly string $image)
     {
     }
 
@@ -159,7 +158,7 @@ class ContainerBuilder
 
     public function create(): Container
     {
-        $response = $this->client->post('/v1.41/containers/create', [
+        $response = $this->client->post('containers/create', [
             'json' => $this->buildConfig(),
         ]);
 

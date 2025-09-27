@@ -2,11 +2,9 @@
 
 namespace Sharryy\Docker;
 
-use GuzzleHttp\Client;
-
 readonly class ContainerManager
 {
-    public function __construct(private Client $client)
+    public function __construct(private DockerClient $client)
     {
     }
 
@@ -18,7 +16,7 @@ readonly class ContainerManager
     public function find(string $idOrName): ?Container
     {
         try {
-            $response = $this->client->get("/v1.41/containers/{$idOrName}/json");
+            $response = $this->client->get("containers/{$idOrName}/json");
             $data = json_decode($response->getBody()->getContents(), true);
 
             return new Container(
@@ -33,7 +31,7 @@ readonly class ContainerManager
 
     public function list(bool $all = false): array
     {
-        $response = $this->client->get('/v1.41/containers/json', [
+        $response = $this->client->get('containers/json', [
             'query' => ['all' => $all],
         ]);
 

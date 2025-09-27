@@ -2,14 +2,12 @@
 
 namespace Sharryy\Docker;
 
-use GuzzleHttp\Client;
-
 class Container
 {
     private array $details = [];
 
     public function __construct(
-        private readonly Client $client,
+        private readonly DockerClient $client,
         private readonly string $id,
         private readonly ?string $name = null
     ) {
@@ -27,14 +25,14 @@ class Container
 
     public function start(): self
     {
-        $this->client->post("/v1.41/containers/{$this->id}/start");
+        $this->client->post("containers/{$this->id}/start");
 
         return $this;
     }
 
     public function stop(int $timeout = 10): self
     {
-        $this->client->post("/v1.41/containers/{$this->id}/stop", [
+        $this->client->post("containers/{$this->id}/stop", [
             'query' => ['t' => $timeout],
         ]);
 
@@ -43,14 +41,14 @@ class Container
 
     public function restart(): self
     {
-        $this->client->post("/v1.41/containers/{$this->id}/restart");
+        $this->client->post("containers/{$this->id}/restart");
 
         return $this;
     }
 
     public function kill(string $signal = 'SIGKILL'): self
     {
-        $this->client->post("/v1.41/containers/{$this->id}/kill", [
+        $this->client->post("containers/{$this->id}/kill", [
             'query' => ['signal' => $signal],
         ]);
 
@@ -59,14 +57,14 @@ class Container
 
     public function wait(): array
     {
-        $response = $this->client->post("/v1.41/containers/{$this->id}/wait");
-        ;
+        $response = $this->client->post("containers/{$this->id}/wait");
+
         return json_decode($response->getBody()->getContents(), true);
     }
 
     public function logs(bool $stdout = true, bool $stderr = true, bool $timestamps = false): string
     {
-        $response = $this->client->get("/v1.41/containers/{$this->id}/logs", [
+        $response = $this->client->get("containers/{$this->id}/logs", [
             'query' => [
                 'stdout' => $stdout,
                 'stderr' => $stderr,
@@ -79,7 +77,7 @@ class Container
 
     public function remove(bool $force = false, bool $removeVolumes = false): void
     {
-        $this->client->delete("/v1.41/containers/{$this->id}", [
+        $this->client->delete("containers/{$this->id}", [
             'query' => [
                 'force' => $force,
                 'v' => $removeVolumes,
@@ -90,7 +88,7 @@ class Container
     public function inspect(bool $refresh = false): array
     {
         if (empty($this->details) || $refresh) {
-            $response = $this->client->get("/v1.41/containers/{$this->id}/json");
+            $response = $this->client->get("containers/{$this->id}/json");
             $this->details = json_decode($response->getBody()->getContents(), true);
         }
 
@@ -112,7 +110,7 @@ class Container
 
     public function exec(array $command, bool $attachStdout = true, bool $attachStderr = true): string
     {
-        $execResponse = $this->client->post("/v1.41/containers/{$this->id}/exec", [
+        $execResponse = $this->client->post("containers/{$this->id}/exec", [
             'json' => [
                 'AttachStdout' => $attachStdout,
                 'AttachStderr' => $attachStderr,
@@ -123,7 +121,7 @@ class Container
         $execData = json_decode($execResponse->getBody()->getContents(), true);
         $execId = $execData['Id'];
 
-        $startResponse = $this->client->post("/v1.41/exec/{$execId}/start", [
+        $startResponse = $this->client->post("exec/{$execId}/start", [
             'json' => [
                 'Detach' => false,
             ],

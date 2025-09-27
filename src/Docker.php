@@ -6,14 +6,15 @@ use GuzzleHttp\Client;
 
 class Docker
 {
-    private Client $client;
-    private ConnectionOptions $options;
+    private DockerClient $client;
 
-    public function __construct(?ConnectionOptions $options = null)
+    public function __construct(private ?ConnectionOptions $options = null)
     {
         $this->options = $options ?? ConnectionOptions::fromSocket();
 
-        $this->client = new Client($this->options->getGuzzleConfig());
+        $httpClient = new Client($this->options->getGuzzleConfig());
+
+        $this->client = new DockerClient($httpClient, $this->options->getApiVersion());
     }
 
     public function containers(): ContainerManager
