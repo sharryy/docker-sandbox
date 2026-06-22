@@ -4,7 +4,6 @@ namespace Sharryy\Docker;
 
 use Sharryy\Docker\Exceptions\DockerException;
 use Sharryy\Docker\Exceptions\ProcessTimeoutException;
-use Sharryy\Docker\Support\Tar;
 
 readonly class ContainerManager
 {
@@ -51,16 +50,8 @@ readonly class ContainerManager
 
     public function run(string $image, string $code, int $timeout = 30): string
     {
-        // Inject the code through the Docker API rather than a host bind mount,
-        // so this works the same on local sockets, VM-backed daemons
-        // (Colima/Lima) and remote TCP/TLS daemons.
-        $container = $this->from($image)
-            ->withCommand(['php', '/code.php'])
-            ->withNetworkMode('none')
-            ->withMemoryLimit('128m')
-            ->create();
+        $container = $this->hardened($image, $code)->create();
 
-        $container->putArchive('/', Tar::single('code.php', $code));
         $container->start();
 
         try {
@@ -76,5 +67,30 @@ readonly class ContainerManager
         $container->remove();
 
         return $output;
+    }
+
+    /**
+     * Build a locked-down container for running untrusted code: no network,
+     * non-root, read-only rootfs with a small writable tmpfs, no capabilities,
+     * no privilege escalation, no swap, and a process-count limit.
+     *
+     * The code is delivered through an env var and written to the tmpfs at
+     * runtime — a read-only rootfs refuses archive uploads, and this works the
+     * same on local, VM-backed (Colima/Lima) and remote daemons.
+     */
+    private function hardened(string $image, string $code): ContainerBuilder
+    {
+        return $this->from($image)
+            ->withCommand(['sh', '-c', 'printf "%s" "$SANDBOX_CODE" | base64 -d > /tmp/main.php && exec php /tmp/main.php'])
+            ->withEnvironment(['SANDBOX_CODE' => base64_encode($code)])
+            ->withNetworkMode('none')
+            ->withMemoryLimit('128m')
+            ->withoutSwap()
+            ->withPidsLimit(128)
+            ->withUser('65534:65534')
+            ->asReadOnly()
+            ->withTmpfs('/tmp', 'rw,size=16m')
+            ->dropCapabilities()
+            ->withoutNewPrivileges();
     }
 }
