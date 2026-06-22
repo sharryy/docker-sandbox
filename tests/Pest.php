@@ -1,5 +1,7 @@
 <?php
 
+use Sharryy\Docker\Docker;
+
 /**
  * Resolve a usable Docker socket for the integration tests.
  *
@@ -31,3 +33,18 @@ function dockerSocket(): string
 
     return '/var/run/docker.sock';
 }
+
+// Ensure the base image the integration suite builds on is present, so the
+// builder-based tests work on a fresh daemon (e.g. CI) and not just where the
+// image happens to be cached already.
+(static function (): void {
+    try {
+        $docker = new Docker;
+
+        if (! $docker->images()->exists('php:8.2-cli')) {
+            $docker->images()->pull('php:8.2-cli');
+        }
+    } catch (Throwable) {
+        // No daemon reachable at bootstrap; the tests themselves will surface it.
+    }
+})();
