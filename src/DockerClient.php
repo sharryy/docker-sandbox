@@ -51,7 +51,7 @@ class DockerClient
         $this->negotiateVersion();
 
         try {
-            return $this->client->request($method, $this->buildPath($path), $options);
+            return $this->client->request(strtoupper($method), $this->buildPath($path), $options);
         } catch (ConnectException $e) {
             throw new ConnectionException("Could not connect to the Docker daemon: {$e->getMessage()}", 0, $e);
         } catch (ClientException $e) {

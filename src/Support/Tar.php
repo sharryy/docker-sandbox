@@ -13,7 +13,7 @@ namespace Sharryy\Docker\Support;
  */
 class Tar
 {
-    private const BLOCK_SIZE = 512;
+    private const int BLOCK_SIZE = 512;
 
     /**
      * Build a tar archive containing a single file.
@@ -33,8 +33,8 @@ class Tar
             .pack('a8', sprintf('%07o', 0))            // gid
             .pack('a12', sprintf('%011o', $size))
             .pack('a12', sprintf('%011o', 0))          // mtime (deterministic)
-            .str_repeat(' ', 8)                         // checksum placeholder
-            .'0'                                        // typeflag: regular file
+            .str_repeat(' ', 8)                            // checksum placeholder
+            .'0'                                                         // typeflag: regular file
             .pack('a100', '')                           // linkname
             .pack('a6', 'ustar')
             .pack('a2', '00')
@@ -47,6 +47,7 @@ class Tar
         $header = str_pad($header, self::BLOCK_SIZE, "\0");
 
         $checksum = 0;
+
         for ($i = 0; $i < self::BLOCK_SIZE; $i++) {
             $checksum += ord($header[$i]);
         }

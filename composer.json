@@ -16,15 +16,15 @@
         }
     ],
     "require": {
-        "php": "^8.4",
-        "guzzlehttp/guzzle": "^7.10",
+        "php": "^8.5",
+        "guzzlehttp/guzzle": "^7.12",
         "ext-curl": "*"
     },
     "require-dev": {
-        "laravel/pint": "^1.0",
-        "pestphp/pest": "^3.0",
-        "phpstan/phpstan": "^2.1",
-        "spatie/ray": "^1.28"
+        "laravel/pint": "^1.29",
+        "pestphp/pest": "^4.0",
+        "phpstan/phpstan": "^2.2",
+        "spatie/ray": "^1.48"
     },
     "autoload": {
         "psr-4": {
