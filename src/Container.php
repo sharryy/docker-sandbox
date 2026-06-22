@@ -60,6 +60,41 @@ class Container
         return $this;
     }
 
+    public function pause(): self
+    {
+        $this->client->post("containers/{$this->id}/pause");
+
+        return $this;
+    }
+
+    public function unpause(): self
+    {
+        $this->client->post("containers/{$this->id}/unpause");
+
+        return $this;
+    }
+
+    public function rename(string $name): self
+    {
+        $this->client->post("containers/{$this->id}/rename", [
+            'query' => ['name' => $name],
+        ]);
+
+        return $this;
+    }
+
+    /**
+     * Fetch a one-shot resource usage snapshot (CPU, memory, network, …).
+     *
+     * @return array<array-key, mixed>
+     */
+    public function stats(): array
+    {
+        return $this->decode($this->client->get("containers/{$this->id}/stats", [
+            'query' => ['stream' => false],
+        ]));
+    }
+
     public function wait(?int $timeout = null): array
     {
         $options = [];
