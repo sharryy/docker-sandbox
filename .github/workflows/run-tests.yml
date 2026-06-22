@@ -20,7 +20,9 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        # The suite runs against a real Docker daemon, which GitHub's
+        # windows-latest runners don't provide, so we test on Linux only.
+        os: [ubuntu-latest]
         php: [8.5]
         stability: [prefer-lowest, prefer-stable]
 
