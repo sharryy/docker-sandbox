@@ -34,8 +34,31 @@ test('can execute command in running container', function () {
 
     $container->start();
 
-    $output = $container->exec(['php', '-r', 'echo "Exec works!";']);
-    expect($output)->toBe('Exec works!');
+    $result = $container->exec(['php', '-r', 'echo "Exec works!";']);
+    expect($result->output())->toBe('Exec works!')
+        ->and($result->exitCode())->toBe(0)
+        ->and($result->successful())->toBeTrue();
+
+    // Clean up
+    $container->stop()->remove();
+});
+
+test('exec captures stderr and a non-zero exit code', function () {
+    $docker = new Docker;
+
+    $container = $docker->containers()
+        ->from('php:8.2-cli')
+        ->withCommand(['php', '-r', 'while (true) { sleep(1); }'])
+        ->create();
+
+    $container->start();
+
+    $result = $container->exec(['php', '-r', 'fwrite(STDERR, "boom"); exit(3);']);
+
+    expect($result->exitCode())->toBe(3)
+        ->and($result->failed())->toBeTrue()
+        ->and($result->errorOutput())->toBe('boom')
+        ->and($result->output())->toBe('');
 
     // Clean up
     $container->stop()->remove();

@@ -2,8 +2,10 @@
 
 namespace Sharryy\Docker;
 
+use Psr\Http\Message\ResponseInterface;
 use Sharryy\Docker\Exceptions\ConnectionException;
 use Sharryy\Docker\Exceptions\ProcessTimeoutException;
+use Sharryy\Docker\Support\StreamParser;
 
 class Container
 {
@@ -145,26 +147,46 @@ class Container
         return $this->status() === 'running';
     }
 
-    public function exec(array $command, bool $attachStdout = true, bool $attachStderr = true): string
+    /**
+     * Run a command inside the running container and capture its result.
+     *
+     * @param  list<string>  $command
+     */
+    public function exec(array $command, ?string $workingDir = null, ?string $user = null): ExecutionResult
     {
-        $execResponse = $this->client->post("containers/{$this->id}/exec", [
-            'json' => [
-                'AttachStdout' => $attachStdout,
-                'AttachStderr' => $attachStderr,
+        $createResponse = $this->client->post("containers/{$this->id}/exec", [
+            'json' => array_filter([
+                'AttachStdout' => true,
+                'AttachStderr' => true,
                 'Cmd' => $command,
-            ],
+                'WorkingDir' => $workingDir,
+                'User' => $user,
+            ], fn ($value) => $value !== null),
         ]);
 
-        $execData = json_decode($execResponse->getBody()->getContents(), true);
-        $execId = $execData['Id'];
+        $created = $this->decode($createResponse);
+        $execId = is_string($created['Id'] ?? null) ? $created['Id'] : '';
 
         $startResponse = $this->client->post("exec/{$execId}/start", [
-            'json' => [
-                'Detach' => false,
-            ],
+            'json' => ['Detach' => false],
         ]);
 
-        return $this->parseDockerLogs($startResponse->getBody()->getContents());
+        $streams = StreamParser::demux($startResponse->getBody()->getContents());
+
+        $inspect = $this->decode($this->client->get("exec/{$execId}/json"));
+        $exitCode = is_int($inspect['ExitCode'] ?? null) ? $inspect['ExitCode'] : null;
+
+        return new ExecutionResult(trim($streams['stdout']), trim($streams['stderr']), $exitCode);
+    }
+
+    /**
+     * @return array<array-key, mixed>
+     */
+    private function decode(ResponseInterface $response): array
+    {
+        $data = json_decode($response->getBody()->getContents(), true);
+
+        return is_array($data) ? $data : [];
     }
 
     private function isTimeout(ConnectionException $e): bool
@@ -184,7 +206,8 @@ class Container
         while ($pos < $length) {
             if ($length - $pos >= 8) {
                 $header = substr($logs, $pos, 8);
-                $size = unpack('N', substr($header, 4, 4))[1] ?? 0;
+                $unpacked = unpack('N', substr($header, 4, 4));
+                $size = is_array($unpacked) ? (int) $unpacked[1] : 0;
                 $pos += 8;
 
                 if ($size > 0 && $pos + $size <= $length) {
