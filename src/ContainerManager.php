@@ -50,13 +50,18 @@ readonly class ContainerManager
 
     public function run(string $image, string $code, int $timeout = 30): ExecutionResult
     {
+        return $this->runPreset(new Preset($image, 'main.php', 'php'), $code, $timeout);
+    }
+
+    public function runPreset(Preset $preset, string $code, int $timeout = 30): ExecutionResult
+    {
         $images = new ImageManager($this->client);
 
-        if (! $images->exists($image)) {
-            $images->pull($image);
+        if (! $images->exists($preset->image)) {
+            $images->pull($preset->image);
         }
 
-        $container = $this->hardened($image, $code)->create();
+        $container = $this->hardened($preset, $code)->create();
 
         $start = microtime(true);
         $container->start();
@@ -85,10 +90,13 @@ readonly class ContainerManager
      * runtime — a read-only rootfs refuses archive uploads, and this works the
      * same on local, VM-backed (Colima/Lima) and remote daemons.
      */
-    private function hardened(string $image, string $code): ContainerBuilder
+    private function hardened(Preset $preset, string $code): ContainerBuilder
     {
-        return $this->from($image)
-            ->withCommand(['sh', '-c', 'printf "%s" "$SANDBOX_CODE" | base64 -d > /tmp/main.php && exec php /tmp/main.php'])
+        $path = '/tmp/'.$preset->filename;
+        $command = sprintf('printf "%%s" "$SANDBOX_CODE" | base64 -d > %s && exec %s %s', $path, $preset->interpreter, $path);
+
+        return $this->from($preset->image)
+            ->withCommand(['sh', '-c', $command])
             ->withEnvironment(['SANDBOX_CODE' => base64_encode($code)])
             ->withNetworkMode('none')
             ->withMemoryLimit('128m')
