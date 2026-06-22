@@ -1,8 +1,8 @@
-# Sandbox — run code safely in Docker containers
+# Docker Sandbox — run code safely in Docker containers
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/sharryy/sandbox.svg?style=flat-square)](https://packagist.org/packages/sharryy/sandbox)
-[![Tests](https://img.shields.io/github/actions/workflow/status/sharryy/sandbox/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/sharryy/sandbox/actions/workflows/run-tests.yml)
-[![Total Downloads](https://img.shields.io/packagist/dt/sharryy/sandbox.svg?style=flat-square)](https://packagist.org/packages/sharryy/sandbox)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/sharryy/docker-sandbox.svg?style=flat-square)](https://packagist.org/packages/sharryy/docker-sandbox)
+[![Tests](https://img.shields.io/github/actions/workflow/status/sharryy/docker-sandbox/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/sharryy/docker-sandbox/actions/workflows/run-tests.yml)
+[![Total Downloads](https://img.shields.io/packagist/dt/sharryy/docker-sandbox.svg?style=flat-square)](https://packagist.org/packages/sharryy/docker-sandbox)
 
 A simple, secure and fluent PHP API for running untrusted code in isolated
 Docker containers. It talks directly to the Docker Engine API over a unix
@@ -12,7 +12,7 @@ socket or TCP/TLS — no shelling out to the `docker` CLI — and makes the
 ## Installation
 
 ```bash
-composer require sharryy/sandbox
+composer require sharryy/docker-sandbox
 ```
 
 Requires PHP 8.3+, the cURL extension, and access to a Docker daemon (Docker

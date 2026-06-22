@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `sandbox` will be documented in this file.
+All notable changes to `docker-sandbox` will be documented in this file.
 
 ## v0.1.0 - 2026-06-22
 

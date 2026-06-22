@@ -1,5 +1,5 @@
 {
-    "name": "sharryy/sandbox",
+    "name": "sharryy/docker-sandbox",
     "description": "A simple, secure and fluent PHP API for running untrusted code in isolated Docker containers.",
     "keywords": [
         "sandbox",
@@ -9,7 +9,7 @@
         "security",
         "docker-api"
     ],
-    "homepage": "https://github.com/sharryy/sandbox",
+    "homepage": "https://github.com/sharryy/docker-sandbox",
     "license": "MIT",
     "authors": [
         {
@@ -19,8 +19,8 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/sharryy/sandbox/issues",
-        "source": "https://github.com/sharryy/sandbox"
+        "issues": "https://github.com/sharryy/docker-sandbox/issues",
+        "source": "https://github.com/sharryy/docker-sandbox"
     },
     "require": {
         "php": "^8.3",
