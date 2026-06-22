@@ -2,6 +2,8 @@
 
 namespace Sharryy\Docker;
 
+use GuzzleHttp\Handler\CurlHandler;
+use GuzzleHttp\HandlerStack;
 use GuzzleHttp\RequestOptions;
 use Sharryy\Docker\Exceptions\ConnectionException;
 
@@ -110,6 +112,10 @@ class ConnectionOptions
     {
         $config = [
             'base_uri' => $this->baseUri,
+            // Force the curl handler: Guzzle's stream wrapper ignores the unix
+            // socket option, so streaming requests (e.g. following logs) would
+            // otherwise bypass the daemon socket entirely.
+            'handler' => HandlerStack::create(new CurlHandler),
             RequestOptions::HEADERS => [],
         ];
 

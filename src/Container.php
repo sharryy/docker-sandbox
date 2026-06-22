@@ -157,6 +157,43 @@ class Container
         ])->getBody()->getContents();
     }
 
+    /**
+     * Follow the container's output in real time, invoking the callback for
+     * each frame until the container exits.
+     *
+     * @param  callable(string $text, string $stream): void  $onChunk  $stream is "stdout" or "stderr"
+     */
+    public function streamLogs(callable $onChunk): void
+    {
+        $body = $this->client->get("containers/{$this->id}/logs", [
+            'query' => ['stdout' => true, 'stderr' => true, 'follow' => true],
+            'stream' => true,
+        ])->getBody();
+
+        $buffer = '';
+
+        while (! $body->eof()) {
+            $buffer .= $body->read(8192);
+
+            while (strlen($buffer) >= 8) {
+                $type = ord($buffer[0]);
+                $unpacked = unpack('N', substr($buffer, 4, 4));
+                $size = is_array($unpacked) && is_int($unpacked[1]) ? $unpacked[1] : 0;
+
+                if (strlen($buffer) < 8 + $size) {
+                    break;
+                }
+
+                $text = substr($buffer, 8, $size);
+                $buffer = substr($buffer, 8 + $size);
+
+                if ($size > 0) {
+                    $onChunk($text, $type === 2 ? 'stderr' : 'stdout');
+                }
+            }
+        }
+    }
+
     public function logs(bool $stdout = true, bool $stderr = true, bool $timestamps = false): string
     {
         $response = $this->client->get("containers/{$this->id}/logs", [

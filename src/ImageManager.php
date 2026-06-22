@@ -3,6 +3,7 @@
 namespace Sharryy\Docker;
 
 use Sharryy\Docker\Exceptions\BadRequestException;
+use Sharryy\Docker\Exceptions\DockerException;
 
 readonly class ImageManager
 {
@@ -23,8 +24,13 @@ readonly class ImageManager
             $options['headers'] = ['X-Registry-Auth' => $auth];
         }
 
-        // Reading the body to completion blocks until the pull has finished.
-        $this->client->post('images/create', $options)->getBody()->getContents();
+        // images/create returns 200 even on failure and reports problems as
+        // {"error": ...} lines in the streamed body, so inspect it.
+        $body = $this->client->post('images/create', $options)->getBody()->getContents();
+
+        if (str_contains($body, '"error"')) {
+            throw new DockerException("Failed to pull image '{$image}': {$body}");
+        }
     }
 
     public function exists(string $image): bool
