@@ -195,6 +195,14 @@ are skipped unless `DOCKER_PULL_TESTS=1` is set.
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
+## Contributing
+
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+
+## Security
+
+If you discover a security vulnerability, please review our [security policy](SECURITY.md) for how to report it responsibly.
+
 ## Credits
 
 - [Sharryy](https://github.com/sharryy)
