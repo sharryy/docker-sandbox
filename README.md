@@ -11,10 +11,12 @@ socket or TCP/TLS — no shelling out to the `docker` CLI — and makes the
 
 ## Demo
 
-**[Code Arena](https://github.com/sharryy/code-arena)** is a playground built on
-this package — run PHP, Python or Node in a sandbox and watch it block a network
-call, kill an infinite loop, and grade HackerRank-style challenges. _(Live demo
-and a walkthrough video coming soon.)_
+![Code Arena — running code safely in a sandbox](.github/demo.gif)
+
+The clip above is **[Code Arena](https://github.com/sharryy/code-arena)**, a
+playground built on this package: run PHP, Python or Node in a sandbox and watch
+it block a network call, refuse a write to its filesystem, and grade
+HackerRank-style challenges — all in throwaway containers.
 
 ## Installation
 
