@@ -5,7 +5,7 @@ namespace Sharryy\Docker;
 use Sharryy\Docker\Exceptions\BadRequestException;
 use Sharryy\Docker\Exceptions\DockerException;
 
-readonly class ImageManager
+final readonly class ImageManager
 {
     public function __construct(private DockerClient $client) {}
 

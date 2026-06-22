@@ -7,15 +7,15 @@ use Stringable;
 /**
  * The outcome of running code or a command in a container.
  */
-final class ExecutionResult implements Stringable
+final readonly class ExecutionResult implements Stringable
 {
     public function __construct(
-        private readonly string $output,
-        private readonly string $errorOutput = '',
-        private readonly ?int $exitCode = null,
-        private readonly bool $timedOut = false,
-        private readonly bool $oomKilled = false,
-        private readonly float $duration = 0.0,
+        private string $output,
+        private string $errorOutput = '',
+        private ?int $exitCode = null,
+        private bool $timedOut = false,
+        private bool $oomKilled = false,
+        private float $duration = 0.0,
     ) {}
 
     public function output(): string

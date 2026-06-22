@@ -4,7 +4,7 @@ namespace Sharryy\Docker;
 
 use GuzzleHttp\Client;
 
-class Docker
+final class Docker
 {
     private DockerClient $client;
 
@@ -27,6 +27,7 @@ class Docker
         return new ImageManager($this->client);
     }
 
+    #[\NoDiscard('The ExecutionResult carries the output and exit code.')]
     public function run(string $image, string $code, int $timeout = 30): ExecutionResult
     {
         return $this->containers()->run($image, $code, $timeout);

@@ -2,9 +2,10 @@
 
 namespace Sharryy\Docker\Tests;
 
+use Sharryy\Docker\Container;
 use Sharryy\Docker\Docker;
 
-function longRunningContainer(Docker $docker)
+function longRunningContainer(Docker $docker): Container
 {
     return $docker->containers()
         ->from('php:8.2-cli')

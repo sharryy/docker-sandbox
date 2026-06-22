@@ -11,7 +11,7 @@ use Sharryy\Docker\Exceptions\BadRequestException;
 use Sharryy\Docker\Exceptions\ConnectionException;
 use Sharryy\Docker\Exceptions\DockerException;
 
-class DockerClient
+final class DockerClient
 {
     private bool $negotiated = false;
 

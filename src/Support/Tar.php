@@ -11,7 +11,7 @@ namespace Sharryy\Docker\Support;
  * so it works identically for local sockets, VM-backed daemons (Colima/Lima)
  * and remote TCP/TLS daemons.
  */
-class Tar
+final class Tar
 {
     private const int BLOCK_SIZE = 512;
 

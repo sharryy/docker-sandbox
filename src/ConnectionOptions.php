@@ -7,7 +7,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\RequestOptions;
 use Sharryy\Docker\Exceptions\ConnectionException;
 
-class ConnectionOptions
+final readonly class ConnectionOptions
 {
     private string $baseUri;
 

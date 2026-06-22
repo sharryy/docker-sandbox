@@ -8,7 +8,7 @@ use Sharryy\Docker\Exceptions\ProcessTimeoutException;
 use Sharryy\Docker\Support\StreamParser;
 use Sharryy\Docker\Support\Tar;
 
-class Container
+final class Container
 {
     private array $details = [];
 
@@ -271,6 +271,7 @@ class Container
      *
      * @param  list<string>  $command
      */
+    #[\NoDiscard('The ExecutionResult carries the output and exit code.')]
     public function exec(array $command, ?string $workingDir = null, ?string $user = null): ExecutionResult
     {
         $createResponse = $this->client->post("containers/{$this->id}/exec", [

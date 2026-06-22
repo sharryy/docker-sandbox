@@ -5,7 +5,7 @@ namespace Sharryy\Docker;
 use Sharryy\Docker\Exceptions\DockerException;
 use Sharryy\Docker\Exceptions\ProcessTimeoutException;
 
-readonly class ContainerManager
+final readonly class ContainerManager
 {
     public function __construct(private DockerClient $client) {}
 
@@ -48,11 +48,13 @@ readonly class ContainerManager
         );
     }
 
+    #[\NoDiscard('The ExecutionResult carries the output and exit code.')]
     public function run(string $image, string $code, int $timeout = 30): ExecutionResult
     {
         return $this->runPreset(new Preset($image, 'main.php', 'php'), $code, $timeout);
     }
 
+    #[\NoDiscard('The ExecutionResult carries the output and exit code.')]
     public function runPreset(Preset $preset, string $code, int $timeout = 30): ExecutionResult
     {
         $images = new ImageManager($this->client);

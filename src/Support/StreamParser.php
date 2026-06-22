@@ -10,7 +10,7 @@ namespace Sharryy\Docker\Support;
  * 8-byte header: byte 0 is the stream type (1 = stdout, 2 = stderr) and
  * bytes 4-7 are the big-endian frame size.
  */
-class StreamParser
+final class StreamParser
 {
     private const HEADER_SIZE = 8;
 

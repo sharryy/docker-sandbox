@@ -4,7 +4,7 @@ namespace Sharryy\Docker;
 
 use stdClass;
 
-class ContainerBuilder
+final class ContainerBuilder
 {
     private array $command = [];
 
