@@ -29,7 +29,7 @@ test('can pull, list and remove an image', function () {
     $images->remove('busybox:1.36', force: true);
 
     expect($images->exists('busybox:1.36'))->toBeFalse();
-});
+})->skip(! getenv('DOCKER_PULL_TESTS'), 'Set DOCKER_PULL_TESTS=1 to exercise network pulls from Docker Hub.');
 
 test('run auto-pulls a missing image', function () {
     $docker = new Docker;

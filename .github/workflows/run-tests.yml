@@ -18,7 +18,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 5
     strategy:
-      fail-fast: true
+      fail-fast: false
+      # Limit concurrency so the parallel jobs don't trip Docker Hub's
+      # anonymous pull rate limit when fetching the test image.
+      max-parallel: 2
       matrix:
         # The suite runs against a real Docker daemon, which GitHub's
         # windows-latest runners don't provide, so we test on Linux only.
@@ -49,6 +52,12 @@ jobs:
 
       - name: List Installed Dependencies
         run: composer show -D
+
+      - name: Pull the test image
+        run: |
+          for i in 1 2 3 4 5; do
+            docker pull php:8.2-cli && break || { echo "pull failed, retrying in 15s"; sleep 15; }
+          done
 
       - name: Execute tests
         run: vendor/bin/pest
