@@ -50,6 +50,12 @@ readonly class ContainerManager
 
     public function run(string $image, string $code, int $timeout = 30): ExecutionResult
     {
+        $images = new ImageManager($this->client);
+
+        if (! $images->exists($image)) {
+            $images->pull($image);
+        }
+
         $container = $this->hardened($image, $code)->create();
 
         $start = microtime(true);
