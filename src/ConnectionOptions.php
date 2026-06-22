@@ -2,8 +2,8 @@
 
 namespace Sharryy\Docker;
 
-use RuntimeException;
 use GuzzleHttp\RequestOptions;
+use RuntimeException;
 
 class ConnectionOptions
 {
@@ -28,7 +28,7 @@ class ConnectionOptions
         }
 
         return new self('http://localhost', [
-            CURLOPT_UNIX_SOCKET_PATH => $socket
+            CURLOPT_UNIX_SOCKET_PATH => $socket,
         ], $apiVersion);
     }
 
@@ -41,9 +41,9 @@ class ConnectionOptions
         string $host,
         int $port = 2376,
         string $apiVersion = 'v1.41',
-        string $caCert = null,
-        string $clientCert = null,
-        string $clientKey = null
+        ?string $caCert = null,
+        ?string $clientCert = null,
+        ?string $clientKey = null
     ): self {
         $curlOptions = [];
 
