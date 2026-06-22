@@ -1,10 +1,13 @@
 {
     "name": "sharryy/sandbox",
-    "description": "A package to effortlessly interact with Docker Engine API",
+    "description": "A simple, secure and fluent PHP API for running untrusted code in isolated Docker containers.",
     "keywords": [
         "sandbox",
         "docker",
-        "container"
+        "container",
+        "code-execution",
+        "security",
+        "docker-api"
     ],
     "homepage": "https://github.com/sharryy/sandbox",
     "license": "MIT",
@@ -15,16 +18,19 @@
             "role": "Developer"
         }
     ],
+    "support": {
+        "issues": "https://github.com/sharryy/sandbox/issues",
+        "source": "https://github.com/sharryy/sandbox"
+    },
     "require": {
-        "php": "^8.5",
+        "php": "^8.3",
         "guzzlehttp/guzzle": "^7.12",
         "ext-curl": "*"
     },
     "require-dev": {
         "laravel/pint": "^1.29",
         "pestphp/pest": "^4.7",
-        "phpstan/phpstan": "^2.2",
-        "spatie/ray": "^1.48"
+        "phpstan/phpstan": "^2.2"
     },
     "autoload": {
         "psr-4": {
@@ -39,6 +45,7 @@
     "scripts": {
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage",
+        "analyse": "vendor/bin/phpstan analyse",
         "format": "vendor/bin/pint"
     },
     "config": {

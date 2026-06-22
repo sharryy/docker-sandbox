@@ -32,25 +32,21 @@ final class Sandbox
         self::$custom = [];
     }
 
-    #[\NoDiscard('The ExecutionResult carries the output and exit code.')]
     public function run(string $language, string $code, int $timeout = 30): ExecutionResult
     {
         return $this->docker->containers()->runPreset($this->preset($language), $code, $timeout);
     }
 
-    #[\NoDiscard('The ExecutionResult carries the output and exit code.')]
     public function php(string $code, int $timeout = 30): ExecutionResult
     {
         return $this->run('php', $code, $timeout);
     }
 
-    #[\NoDiscard('The ExecutionResult carries the output and exit code.')]
     public function python(string $code, int $timeout = 30): ExecutionResult
     {
         return $this->run('python', $code, $timeout);
     }
 
-    #[\NoDiscard('The ExecutionResult carries the output and exit code.')]
     public function node(string $code, int $timeout = 30): ExecutionResult
     {
         return $this->run('node', $code, $timeout);

@@ -15,7 +15,7 @@ socket or TCP/TLS — no shelling out to the `docker` CLI — and makes the
 composer require sharryy/sandbox
 ```
 
-Requires PHP 8.5+, the cURL extension, and access to a Docker daemon (Docker
+Requires PHP 8.3+, the cURL extension, and access to a Docker daemon (Docker
 Desktop, Colima, Lima, or a remote daemon over TCP/TLS).
 
 > **Note:** The package is developed and tested on Linux and macOS. Windows is

@@ -48,13 +48,11 @@ final readonly class ContainerManager
         );
     }
 
-    #[\NoDiscard('The ExecutionResult carries the output and exit code.')]
     public function run(string $image, string $code, int $timeout = 30): ExecutionResult
     {
         return $this->runPreset(new Preset($image, 'main.php', 'php'), $code, $timeout);
     }
 
-    #[\NoDiscard('The ExecutionResult carries the output and exit code.')]
     public function runPreset(Preset $preset, string $code, int $timeout = 30): ExecutionResult
     {
         $images = new ImageManager($this->client);

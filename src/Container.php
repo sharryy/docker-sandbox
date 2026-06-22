@@ -271,7 +271,6 @@ final class Container
      *
      * @param  list<string>  $command
      */
-    #[\NoDiscard('The ExecutionResult carries the output and exit code.')]
     public function exec(array $command, ?string $workingDir = null, ?string $user = null): ExecutionResult
     {
         $createResponse = $this->client->post("containers/{$this->id}/exec", [
