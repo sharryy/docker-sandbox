@@ -7,9 +7,9 @@ use Sharryy\Docker\Docker;
 test('sandboxed code runs as a non-root user', function () {
     $docker = new Docker;
 
-    $output = $docker->run('php:8.2-cli', '<?php echo trim(shell_exec("id -u"));');
+    $result = $docker->run('php:8.2-cli', '<?php echo trim(shell_exec("id -u"));');
 
-    expect($output)->toBe('65534');
+    expect($result->output())->toBe('65534');
 });
 
 test('sandboxed code has no network access', function () {
@@ -17,9 +17,9 @@ test('sandboxed code has no network access', function () {
 
     $code = '<?php $c = @fsockopen("1.1.1.1", 80, $e, $s, 2); echo $c === false ? "blocked" : "open";';
 
-    $output = $docker->run('php:8.2-cli', $code);
+    $result = $docker->run('php:8.2-cli', $code);
 
-    expect($output)->toBe('blocked');
+    expect($result->output())->toBe('blocked');
 });
 
 test('sandboxed code can still write to the tmpfs scratch area', function () {
@@ -27,9 +27,9 @@ test('sandboxed code can still write to the tmpfs scratch area', function () {
 
     $code = '<?php file_put_contents("/tmp/x", "ok"); echo file_get_contents("/tmp/x");';
 
-    $output = $docker->run('php:8.2-cli', $code);
+    $result = $docker->run('php:8.2-cli', $code);
 
-    expect($output)->toBe('ok');
+    expect($result->output())->toBe('ok');
 });
 
 test('builder applies security hardening to the container config', function () {

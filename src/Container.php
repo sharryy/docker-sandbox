@@ -114,6 +114,32 @@ class Container
         return $this->parseDockerLogs($response->getBody()->getContents());
     }
 
+    /**
+     * Capture the container's stdout/stderr, exit code and OOM state as a result.
+     */
+    public function result(float $duration = 0.0): ExecutionResult
+    {
+        $raw = $this->client->get("containers/{$this->id}/logs", [
+            'query' => ['stdout' => true, 'stderr' => true],
+        ])->getBody()->getContents();
+
+        $streams = StreamParser::demux($raw);
+
+        $details = $this->inspect(true);
+        $state = is_array($details['State'] ?? null) ? $details['State'] : [];
+        $exitCode = is_int($state['ExitCode'] ?? null) ? $state['ExitCode'] : null;
+        $oomKilled = (bool) ($state['OOMKilled'] ?? false);
+
+        return new ExecutionResult(
+            trim($streams['stdout']),
+            trim($streams['stderr']),
+            $exitCode,
+            false,
+            $oomKilled,
+            $duration,
+        );
+    }
+
     public function remove(bool $force = false, bool $removeVolumes = false): void
     {
         $this->client->delete("containers/{$this->id}", [

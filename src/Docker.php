@@ -22,7 +22,7 @@ class Docker
         return new ContainerManager($this->client);
     }
 
-    public function run(string $image, string $code, int $timeout = 30): string
+    public function run(string $image, string $code, int $timeout = 30): ExecutionResult
     {
         return $this->containers()->run($image, $code, $timeout);
     }

@@ -9,11 +9,12 @@ use Sharryy\Docker\Exceptions\ProcessTimeoutException;
 test('can run simple PHP code in container', function () {
     $docker = new Docker;
 
-    $code = '<?php echo "Hello from Docker!";';
+    $result = $docker->run('php:8.2-cli', '<?php echo "Hello from Docker!";');
 
-    $output = $docker->run('php:8.2-cli', $code);
-
-    expect($output)->toBe('Hello from Docker!');
+    expect($result->output())->toBe('Hello from Docker!')
+        ->and($result->successful())->toBeTrue()
+        ->and($result->exitCode())->toBe(0)
+        ->and($result->duration())->toBeGreaterThan(0.0);
 });
 
 test('can use custom connection options', function () {
@@ -21,33 +22,38 @@ test('can use custom connection options', function () {
 
     $docker = new Docker($connectionOptions);
 
-    $code = '<?php echo "Connected via socket!";';
+    $result = $docker->run('php:8.2-cli', '<?php echo "Connected via socket!";');
 
-    $output = $docker->run('php:8.2-cli', $code);
-
-    expect($output)->toBe('Connected via socket!');
+    expect($result->output())->toBe('Connected via socket!');
 });
 
 test('can run PHP code with calculations', function () {
     $docker = new Docker;
 
-    $code = '<?php echo 2 + 2;';
+    $result = $docker->run('php:8.2-cli', '<?php echo 2 + 2;');
 
-    $output = $docker->run('php:8.2-cli', $code);
-
-    expect($output)->toBe('4');
+    expect($result->output())->toBe('4');
 });
 
-test('can capture error output', function () {
+test('reports a non-zero exit code without throwing', function () {
     $docker = new Docker;
 
-    $code = '<?php trigger_error("This is a test error", E_USER_WARNING); echo "Done";';
+    $result = $docker->run('php:8.2-cli', '<?php echo "bye"; exit(5);');
 
-    $output = $docker->run('php:8.2-cli', $code);
+    expect($result->exitCode())->toBe(5)
+        ->and($result->failed())->toBeTrue()
+        ->and($result->output())->toBe('bye');
+});
 
-    expect($output)->toContain('Warning')
-        ->and($output)->toContain('This is a test error')
-        ->and($output)->toContain('Done');
+test('captures error output on stderr separately from stdout', function () {
+    $docker = new Docker;
+
+    $code = '<?php fwrite(STDERR, "to-stderr"); echo "to-stdout";';
+
+    $result = $docker->run('php:8.2-cli', $code);
+
+    expect($result->output())->toBe('to-stdout')
+        ->and($result->errorOutput())->toBe('to-stderr');
 });
 
 test('terminates code that exceeds the timeout', function () {

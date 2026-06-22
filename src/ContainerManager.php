@@ -48,10 +48,11 @@ readonly class ContainerManager
         );
     }
 
-    public function run(string $image, string $code, int $timeout = 30): string
+    public function run(string $image, string $code, int $timeout = 30): ExecutionResult
     {
         $container = $this->hardened($image, $code)->create();
 
+        $start = microtime(true);
         $container->start();
 
         try {
@@ -63,10 +64,10 @@ readonly class ContainerManager
             throw $e;
         }
 
-        $output = $container->logs();
-        $container->remove();
+        $result = $container->result(microtime(true) - $start);
+        $container->remove(true);
 
-        return $output;
+        return $result;
     }
 
     /**

@@ -77,7 +77,7 @@ test('existing run method still works', function () {
 
     $code = '<?php echo "Legacy method works!";';
 
-    $output = $docker->run('php:8.2-cli', $code);
+    $result = $docker->run('php:8.2-cli', $code);
 
-    expect($output)->toBe('Legacy method works!');
+    expect($result->output())->toBe('Legacy method works!');
 });
