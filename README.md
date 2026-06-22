@@ -1,8 +1,8 @@
-# Shipyard — run code safely in Docker containers
+# Sandbox — run code safely in Docker containers
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/sharryy/shipyard.svg?style=flat-square)](https://packagist.org/packages/sharryy/shipyard)
-[![Tests](https://img.shields.io/github/actions/workflow/status/sharryy/shipyard/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/sharryy/shipyard/actions/workflows/run-tests.yml)
-[![Total Downloads](https://img.shields.io/packagist/dt/sharryy/shipyard.svg?style=flat-square)](https://packagist.org/packages/sharryy/shipyard)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/sharryy/sandbox.svg?style=flat-square)](https://packagist.org/packages/sharryy/sandbox)
+[![Tests](https://img.shields.io/github/actions/workflow/status/sharryy/sandbox/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/sharryy/sandbox/actions/workflows/run-tests.yml)
+[![Total Downloads](https://img.shields.io/packagist/dt/sharryy/sandbox.svg?style=flat-square)](https://packagist.org/packages/sharryy/sandbox)
 
 A simple, secure and fluent PHP API for running untrusted code in isolated
 Docker containers. It talks directly to the Docker Engine API over a unix
@@ -12,7 +12,7 @@ socket or TCP/TLS — no shelling out to the `docker` CLI — and makes the
 ## Installation
 
 ```bash
-composer require sharryy/shipyard
+composer require sharryy/sandbox
 ```
 
 Requires PHP 8.5+, the cURL extension, and access to a Docker daemon (Docker
