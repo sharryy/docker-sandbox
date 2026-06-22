@@ -20,9 +20,23 @@ class Tar
      */
     public static function single(string $name, string $contents, int $mode = 0644): string
     {
-        return self::header($name, strlen($contents), $mode)
-            .self::pad($contents)
-            .str_repeat("\0", self::BLOCK_SIZE * 2);
+        return self::archive([$name => $contents], $mode);
+    }
+
+    /**
+     * Build a tar archive from a map of path => contents.
+     *
+     * @param  array<string, string>  $files
+     */
+    public static function archive(array $files, int $mode = 0644): string
+    {
+        $tar = '';
+
+        foreach ($files as $name => $contents) {
+            $tar .= self::header($name, strlen($contents), $mode).self::pad($contents);
+        }
+
+        return $tar.str_repeat("\0", self::BLOCK_SIZE * 2);
     }
 
     private static function header(string $name, int $size, int $mode): string

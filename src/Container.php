@@ -6,6 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use Sharryy\Docker\Exceptions\ConnectionException;
 use Sharryy\Docker\Exceptions\ProcessTimeoutException;
 use Sharryy\Docker\Support\StreamParser;
+use Sharryy\Docker\Support\Tar;
 
 class Container
 {
@@ -99,6 +100,26 @@ class Container
         ]);
 
         return $this;
+    }
+
+    /**
+     * Upload a set of files into the container.
+     *
+     * @param  array<string, string>  $files  map of path => contents
+     */
+    public function putFiles(array $files, string $path = '/'): self
+    {
+        return $this->putArchive($path, Tar::archive($files));
+    }
+
+    /**
+     * Download a path from the container as a raw tar archive.
+     */
+    public function getArchive(string $path): string
+    {
+        return $this->client->get("containers/{$this->id}/archive", [
+            'query' => ['path' => $path],
+        ])->getBody()->getContents();
     }
 
     public function logs(bool $stdout = true, bool $stderr = true, bool $timestamps = false): string
