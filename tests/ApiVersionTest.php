@@ -3,9 +3,9 @@
 namespace Sharryy\Docker\Tests;
 
 use GuzzleHttp\Client;
+use Sharryy\Docker\ConnectionOptions;
 use Sharryy\Docker\Docker;
 use Sharryy\Docker\DockerClient;
-use Sharryy\Docker\ConnectionOptions;
 
 test('docker client uses configured API version', function () {
     $httpClient = new Client(['base_uri' => 'http://localhost']);
@@ -19,7 +19,7 @@ test('can configure different API versions', function () {
     $versions = ['v1.40', 'v1.41', 'v1.42', 'v1.43'];
 
     foreach ($versions as $version) {
-        $options = ConnectionOptions::fromSocket('/var/run/docker.sock', $version);
+        $options = ConnectionOptions::fromSocket(dockerSocket(), $version);
         expect($options->getApiVersion())->toBe($version);
     }
 });
@@ -43,7 +43,7 @@ test('tls connection supports custom API version', function () {
 });
 
 test('fluent API version change creates new instance', function () {
-    $original = ConnectionOptions::fromSocket('/var/run/docker.sock', 'v1.41');
+    $original = ConnectionOptions::fromSocket(dockerSocket(), 'v1.41');
     $modified = $original->withApiVersion('v1.42');
 
     expect($original->getApiVersion())->toBe('v1.41')
@@ -52,7 +52,7 @@ test('fluent API version change creates new instance', function () {
 });
 
 test('docker uses connection options API version', function () {
-    $options = ConnectionOptions::fromSocket('/var/run/docker.sock', 'v1.40');
+    $options = ConnectionOptions::fromSocket(dockerSocket(), 'v1.40');
     $docker = new Docker($options);
 
     // The Docker class should use the API version from ConnectionOptions

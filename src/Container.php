@@ -2,6 +2,9 @@
 
 namespace Sharryy\Docker;
 
+use Sharryy\Docker\Exceptions\ConnectionException;
+use Sharryy\Docker\Exceptions\ProcessTimeoutException;
+
 class Container
 {
     private array $details = [];
@@ -10,8 +13,7 @@ class Container
         private readonly DockerClient $client,
         private readonly string $id,
         private readonly ?string $name = null
-    ) {
-    }
+    ) {}
 
     public function id(): string
     {
@@ -55,11 +57,46 @@ class Container
         return $this;
     }
 
-    public function wait(): array
+    public function wait(?int $timeout = null): array
     {
-        $response = $this->client->post("containers/{$this->id}/wait");
+        $options = [];
+
+        if ($timeout !== null) {
+            $options['timeout'] = $timeout;
+        }
+
+        try {
+            $response = $this->client->post("containers/{$this->id}/wait", $options);
+        } catch (ConnectionException $e) {
+            if ($timeout !== null && $this->isTimeout($e)) {
+                throw new ProcessTimeoutException(
+                    "Container {$this->id} did not finish within {$timeout} seconds.",
+                    0,
+                    $e
+                );
+            }
+
+            throw $e;
+        }
 
         return json_decode($response->getBody()->getContents(), true);
+    }
+
+    /**
+     * Upload a tar archive into the container's filesystem.
+     *
+     * @param  string  $path  Directory inside the container to extract into.
+     * @param  string  $tar  Raw tar archive contents.
+     */
+    public function putArchive(string $path, string $tar): self
+    {
+        $this->client->put("containers/{$this->id}/archive", [
+            'query' => ['path' => $path],
+            'headers' => ['Content-Type' => 'application/x-tar'],
+            'body' => $tar,
+        ]);
+
+        return $this;
     }
 
     public function logs(bool $stdout = true, bool $stderr = true, bool $timestamps = false): string
@@ -128,6 +165,14 @@ class Container
         ]);
 
         return $this->parseDockerLogs($startResponse->getBody()->getContents());
+    }
+
+    private function isTimeout(ConnectionException $e): bool
+    {
+        $message = $e->getPrevious()?->getMessage() ?? $e->getMessage();
+
+        return str_contains($message, 'timed out')
+            || str_contains($message, 'cURL error 28');
     }
 
     private function parseDockerLogs(string $logs): string

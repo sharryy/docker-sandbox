@@ -4,6 +4,7 @@ namespace Sharryy\Docker\Tests;
 
 use Sharryy\Docker\ConnectionOptions;
 use Sharryy\Docker\Docker;
+use Sharryy\Docker\Exceptions\ProcessTimeoutException;
 
 test('can run simple PHP code in container', function () {
     $docker = new Docker;
@@ -47,4 +48,13 @@ test('can capture error output', function () {
     expect($output)->toContain('Warning')
         ->and($output)->toContain('This is a test error')
         ->and($output)->toContain('Done');
+});
+
+test('terminates code that exceeds the timeout', function () {
+    $docker = new Docker;
+
+    $code = '<?php while (true) {}';
+
+    expect(fn () => $docker->run('php:8.2-cli', $code, timeout: 2))
+        ->toThrow(ProcessTimeoutException::class);
 });

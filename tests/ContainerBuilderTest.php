@@ -5,7 +5,7 @@ namespace Sharryy\Docker\Tests;
 use Sharryy\Docker\Docker;
 
 test('can build container with fluent configuration', function () {
-    $docker = new Docker();
+    $docker = new Docker;
 
     $container = $docker->containers()
         ->from('php:8.2-cli')
@@ -24,7 +24,7 @@ test('can build container with fluent configuration', function () {
 });
 
 test('can run container and get output', function () {
-    $docker = new Docker();
+    $docker = new Docker;
 
     $container = $docker->containers()
         ->from('php:8.2-cli')
@@ -40,8 +40,8 @@ test('can run container and get output', function () {
 });
 
 test('can create named container', function () {
-    $docker = new Docker();
-    $name = 'test-container-' . uniqid();
+    $docker = new Docker;
+    $name = 'test-container-'.uniqid();
 
     $container = $docker->containers()
         ->from('php:8.2-cli')
@@ -56,7 +56,7 @@ test('can create named container', function () {
 });
 
 test('can set environment variables', function () {
-    $docker = new Docker();
+    $docker = new Docker;
 
     $container = $docker->containers()
         ->from('php:8.2-cli')
@@ -73,7 +73,7 @@ test('can set environment variables', function () {
 });
 
 test('existing run method still works', function () {
-    $docker = new Docker();
+    $docker = new Docker;
 
     $code = '<?php echo "Legacy method works!";';
     $output = $docker->run('php:8.2-cli', $code);

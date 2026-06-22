@@ -2,11 +2,13 @@
 
 namespace Sharryy\Docker;
 
+use Sharryy\Docker\Exceptions\DockerException;
+use Sharryy\Docker\Exceptions\ProcessTimeoutException;
+use Sharryy\Docker\Support\Tar;
+
 readonly class ContainerManager
 {
-    public function __construct(private DockerClient $client)
-    {
-    }
+    public function __construct(private DockerClient $client) {}
 
     public function from(string $image): ContainerBuilder
     {
@@ -24,7 +26,7 @@ readonly class ContainerManager
                 $data['Id'],
                 $data['Name'] ? ltrim($data['Name'], '/') : null
             );
-        } catch (\Exception $e) {
+        } catch (DockerException $e) {
             return null;
         }
     }
@@ -38,7 +40,7 @@ readonly class ContainerManager
         $containers = json_decode($response->getBody()->getContents(), true);
 
         return array_map(
-            fn($data) => new Container(
+            fn ($data) => new Container(
                 $this->client,
                 $data['Id'],
                 isset($data['Names'][0]) ? ltrim($data['Names'][0], '/') : null
@@ -49,24 +51,30 @@ readonly class ContainerManager
 
     public function run(string $image, string $code, int $timeout = 30): string
     {
-        $tempFile = tempnam(sys_get_temp_dir(), 'docker-php-');
+        // Inject the code through the Docker API rather than a host bind mount,
+        // so this works the same on local sockets, VM-backed daemons
+        // (Colima/Lima) and remote TCP/TLS daemons.
+        $container = $this->from($image)
+            ->withCommand(['php', '/code.php'])
+            ->withNetworkMode('none')
+            ->withMemoryLimit('128m')
+            ->create();
 
-        file_put_contents($tempFile, $code);
+        $container->putArchive('/', Tar::single('code.php', $code));
+        $container->start();
 
         try {
-            $container = $this->from($image)
-                ->withCommand(['php', '/code.php'])
-                ->withVolume($tempFile, '/code.php', 'ro')
-                ->withNetworkMode('none')
-                ->withMemoryLimit('128m')
-                ->run();
+            $container->wait($timeout);
+        } catch (ProcessTimeoutException $e) {
+            $container->kill();
+            $container->remove(true);
 
-            $output = $container->logs();
-            $container->remove();
-
-            return $output;
-        } finally {
-            unlink($tempFile);
+            throw $e;
         }
+
+        $output = $container->logs();
+        $container->remove();
+
+        return $output;
     }
 }

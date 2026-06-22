@@ -5,7 +5,7 @@ namespace Sharryy\Docker\Tests;
 use Sharryy\Docker\Docker;
 
 test('can get container status', function () {
-    $docker = new Docker();
+    $docker = new Docker;
 
     $container = $docker->containers()
         ->from('php:8.2-cli')
@@ -25,7 +25,7 @@ test('can get container status', function () {
 });
 
 test('can execute command in running container', function () {
-    $docker = new Docker();
+    $docker = new Docker;
 
     $container = $docker->containers()
         ->from('php:8.2-cli')
@@ -42,8 +42,8 @@ test('can execute command in running container', function () {
 });
 
 test('can find container by id', function () {
-    $docker = new Docker();
-    $name = 'findable-container-' . uniqid();
+    $docker = new Docker;
+    $name = 'findable-container-'.uniqid();
 
     $container = $docker->containers()
         ->from('php:8.2-cli')
@@ -61,7 +61,7 @@ test('can find container by id', function () {
 });
 
 test('can list containers', function () {
-    $docker = new Docker();
+    $docker = new Docker;
 
     $container = $docker->containers()
         ->from('php:8.2-cli')
@@ -71,7 +71,7 @@ test('can list containers', function () {
     $container->start();
 
     $containers = $docker->containers()->list();
-    $containerIds = array_map(fn($c) => $c->id(), $containers);
+    $containerIds = array_map(fn ($c) => $c->id(), $containers);
 
     expect($containerIds)->toContain($container->id());
 

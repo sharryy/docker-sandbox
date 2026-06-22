@@ -7,19 +7,26 @@ use stdClass;
 class ContainerBuilder
 {
     private array $command = [];
+
     private array $environment = [];
+
     private array $volumes = [];
+
     private array $ports = [];
+
     private ?string $name = null;
+
     private ?string $networkMode = 'none';
+
     private ?int $memory = null;
+
     private ?float $cpuLimit = null;
+
     private bool $autoRemove = false;
+
     private array $labels = [];
 
-    public function __construct(private readonly DockerClient $client, private readonly string $image)
-    {
-    }
+    public function __construct(private readonly DockerClient $client, private readonly string $image) {}
 
     public function withName(string $name): self
     {
@@ -52,7 +59,7 @@ class ContainerBuilder
     public function withPort(int $hostPort, int $containerPort): self
     {
         $this->ports["{$containerPort}/tcp"] = [
-            ['HostPort' => (string) $hostPort]
+            ['HostPort' => (string) $hostPort],
         ];
 
         return $this;
@@ -122,7 +129,7 @@ class ContainerBuilder
 
         if (! empty($this->environment)) {
             $config['Env'] = array_map(
-                fn($key, $value) => "{$key}={$value}",
+                fn ($key, $value) => "{$key}={$value}",
                 array_keys($this->environment),
                 array_values($this->environment)
             );
@@ -135,7 +142,7 @@ class ContainerBuilder
         if (! empty($this->ports)) {
             $config['ExposedPorts'] = array_combine(
                 array_keys($this->ports),
-                array_fill(0, count($this->ports), new stdClass())
+                array_fill(0, count($this->ports), new stdClass)
             );
             $config['HostConfig']['PortBindings'] = $this->ports;
         }

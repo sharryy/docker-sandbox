@@ -3,12 +3,14 @@
 namespace Sharryy\Docker;
 
 use GuzzleHttp\RequestOptions;
-use RuntimeException;
+use Sharryy\Docker\Exceptions\ConnectionException;
 
 class ConnectionOptions
 {
     private string $baseUri;
+
     private array $curlOptions;
+
     private string $apiVersion;
 
     private function __construct(
@@ -21,15 +23,52 @@ class ConnectionOptions
         $this->apiVersion = $apiVersion;
     }
 
-    public static function fromSocket(string $socket = '/var/run/docker.sock', string $apiVersion = 'v1.41'): self
+    public static function fromSocket(?string $socket = null, string $apiVersion = 'v1.41'): self
     {
-        if (! file_exists($socket)) {
-            throw new RuntimeException("Docker socket not found at: {$socket}");
+        if ($socket === null) {
+            $socket = self::discoverSocket();
+        } elseif (! file_exists($socket)) {
+            throw new ConnectionException("Docker socket not found at: {$socket}");
         }
 
         return new self('http://localhost', [
             CURLOPT_UNIX_SOCKET_PATH => $socket,
         ], $apiVersion);
+    }
+
+    /**
+     * Locate a Docker socket without the caller having to know where it lives.
+     *
+     * Honours DOCKER_HOST first, then falls back to the standard daemon path
+     * and the common Colima / Docker Desktop locations on macOS.
+     */
+    private static function discoverSocket(): string
+    {
+        $candidates = [];
+
+        $dockerHost = getenv('DOCKER_HOST');
+        if (is_string($dockerHost) && str_starts_with($dockerHost, 'unix://')) {
+            $candidates[] = substr($dockerHost, strlen('unix://'));
+        }
+
+        $candidates[] = '/var/run/docker.sock';
+
+        $home = getenv('HOME');
+        if (is_string($home) && $home !== '') {
+            $candidates[] = "{$home}/.colima/default/docker.sock";
+            $candidates[] = "{$home}/.docker/run/docker.sock";
+        }
+
+        foreach ($candidates as $candidate) {
+            if ($candidate !== '' && file_exists($candidate)) {
+                return $candidate;
+            }
+        }
+
+        throw new ConnectionException(
+            'Could not find a Docker socket (tried: '.implode(', ', $candidates).'). '
+            .'Set DOCKER_HOST or pass an explicit path to ConnectionOptions::fromSocket().'
+        );
     }
 
     public static function fromTcp(string $host, int $port = 2375, string $apiVersion = 'v1.41'): self
