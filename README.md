@@ -9,6 +9,13 @@ Docker containers. It talks directly to the Docker Engine API over a unix
 socket or TCP/TLS — no shelling out to the `docker` CLI — and makes the
 *easiest* way to run code also the *most locked-down* one.
 
+## Demo
+
+**[Code Arena](https://github.com/sharryy/code-arena)** is a playground built on
+this package — run PHP, Python or Node in a sandbox and watch it block a network
+call, kill an infinite loop, and grade HackerRank-style challenges. _(Live demo
+and a walkthrough video coming soon.)_
+
 ## Installation
 
 ```bash
