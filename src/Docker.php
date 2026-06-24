@@ -3,6 +3,10 @@
 namespace Sharryy\Docker;
 
 use GuzzleHttp\Client;
+use Sharryy\Docker\Containers\ContainerManager;
+use Sharryy\Docker\Images\ImageManager;
+use Sharryy\Docker\Networks\NetworkManager;
+use Sharryy\Docker\Volumes\VolumeManager;
 
 final class Docker
 {
@@ -25,6 +29,16 @@ final class Docker
     public function images(): ImageManager
     {
         return new ImageManager($this->client);
+    }
+
+    public function networks(): NetworkManager
+    {
+        return new NetworkManager($this->client);
+    }
+
+    public function volumes(): VolumeManager
+    {
+        return new VolumeManager($this->client);
     }
 
     public function run(string $image, string $code, int $timeout = 30): ExecutionResult

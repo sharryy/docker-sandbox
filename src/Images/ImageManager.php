@@ -1,7 +1,8 @@
 <?php
 
-namespace Sharryy\Docker;
+namespace Sharryy\Docker\Images;
 
+use Sharryy\Docker\DockerClient;
 use Sharryy\Docker\Exceptions\BadRequestException;
 use Sharryy\Docker\Exceptions\DockerException;
 
@@ -42,6 +43,30 @@ final readonly class ImageManager
         } catch (BadRequestException) {
             return false;
         }
+    }
+
+    /**
+     * Inspect a local image, returning its low-level details.
+     *
+     * @return array<array-key, mixed>
+     */
+    public function inspect(string $image): array
+    {
+        $data = json_decode($this->client->get("images/{$image}/json")->getBody()->getContents(), true);
+
+        return is_array($data) ? $data : [];
+    }
+
+    /**
+     * Add an additional tag to an existing local image.
+     */
+    public function tag(string $source, string $target): void
+    {
+        [$repo, $tag] = $this->splitTag($target);
+
+        $this->client->post("images/{$source}/tag", [
+            'query' => ['repo' => $repo, 'tag' => $tag],
+        ]);
     }
 
     /**

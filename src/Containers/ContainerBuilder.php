@@ -1,7 +1,8 @@
 <?php
 
-namespace Sharryy\Docker;
+namespace Sharryy\Docker\Containers;
 
+use Sharryy\Docker\DockerClient;
 use stdClass;
 
 final class ContainerBuilder

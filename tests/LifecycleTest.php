@@ -2,7 +2,7 @@
 
 namespace Sharryy\Docker\Tests;
 
-use Sharryy\Docker\Container;
+use Sharryy\Docker\Containers\Container;
 use Sharryy\Docker\Docker;
 
 function longRunningContainer(Docker $docker): Container

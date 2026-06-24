@@ -1,10 +1,12 @@
 <?php
 
-namespace Sharryy\Docker;
+namespace Sharryy\Docker\Containers;
 
 use Psr\Http\Message\ResponseInterface;
+use Sharryy\Docker\DockerClient;
 use Sharryy\Docker\Exceptions\ConnectionException;
 use Sharryy\Docker\Exceptions\ProcessTimeoutException;
+use Sharryy\Docker\ExecutionResult;
 use Sharryy\Docker\Support\StreamParser;
 use Sharryy\Docker\Support\Tar;
 

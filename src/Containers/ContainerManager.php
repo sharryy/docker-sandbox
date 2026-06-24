@@ -1,9 +1,13 @@
 <?php
 
-namespace Sharryy\Docker;
+namespace Sharryy\Docker\Containers;
 
+use Sharryy\Docker\DockerClient;
 use Sharryy\Docker\Exceptions\DockerException;
 use Sharryy\Docker\Exceptions\ProcessTimeoutException;
+use Sharryy\Docker\ExecutionResult;
+use Sharryy\Docker\Images\ImageManager;
+use Sharryy\Docker\Preset;
 
 final readonly class ContainerManager
 {

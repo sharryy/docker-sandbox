@@ -11,6 +11,27 @@ test('detects whether an image exists locally', function () {
         ->and($docker->images()->exists('sharryy/definitely-missing:nope'))->toBeFalse();
 });
 
+test('can inspect and tag a local image', function () {
+    $docker = new Docker;
+    $images = $docker->images();
+
+    $details = $images->inspect('php:8.2-cli');
+
+    expect($details)->toHaveKey('Id')
+        ->and($details['Id'])->toBeString();
+
+    $images->tag('php:8.2-cli', 'sandbox/tagged:test');
+
+    expect($images->exists('sandbox/tagged:test'))->toBeTrue()
+        ->and($images->list())->toContain('sandbox/tagged:test');
+
+    // Removing the extra tag leaves the original image intact.
+    $images->remove('sandbox/tagged:test');
+
+    expect($images->exists('sandbox/tagged:test'))->toBeFalse()
+        ->and($images->exists('php:8.2-cli'))->toBeTrue();
+});
+
 test('can pull, list and remove an image', function () {
     $docker = new Docker;
     $images = $docker->images();

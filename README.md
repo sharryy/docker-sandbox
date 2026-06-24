@@ -177,9 +177,46 @@ $images = $docker->images();
 
 $images->exists('php:8.2-cli');
 $images->pull('php:8.2-cli');                 // optional registry auth arg
+$images->inspect('php:8.2-cli');              // low-level image details
+$images->tag('php:8.2-cli', 'myapp:latest');  // add another tag
 $images->list();                              // repo tags
 $images->remove('php:8.2-cli', force: true);
 $images->prune();                             // remove dangling images
+```
+
+## Networks
+
+```php
+$networks = $docker->networks();
+
+$network = $networks->create('app-net', internal: true);  // also: driver, attachable, labels, options
+$network->connect($container->id());                      // optional aliases
+$network->disconnect($container->id(), force: true);
+$network->inspect();
+
+$networks->find('app-net');                   // by id or name, or null
+$networks->list();                            // array of Network objects
+$networks->remove('app-net');
+$networks->prune();                           // remove unused networks
+```
+
+## Volumes
+
+```php
+$volumes = $docker->volumes();
+
+$volume = $volumes->create('app-data');       // also: driver, labels, driverOpts
+$volume->mountpoint();                        // host path
+$volume->inspect();
+
+// Mount a named volume into a container:
+$docker->containers()->from('php:8.2-cli')->withVolume('app-data', '/data');
+
+$volumes->exists('app-data');
+$volumes->find('app-data');                   // Volume object, or null
+$volumes->list();                             // array of Volume objects
+$volumes->remove('app-data', force: true);
+$volumes->prune();                            // remove unused volumes
 ```
 
 ## Finding & listing containers
